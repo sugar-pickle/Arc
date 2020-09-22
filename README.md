@@ -6,10 +6,24 @@ The receiver runs as a server listening on the port specified in appsettings.jso
 
 Runs in .net core 3.1 and is supported on any OS. 
 
-Docker support coming soon!
-
 ## Usage
 
 Copy the appsettings.json.default file to appsettings.json
 
 Configure the Webhook URL in the appsettings.json
+
+## Usage (Docker)
+
+Follow the instructions above to set up the appsettings.json
+
+From the project root, run the following to build the docker image:
+
+```
+docker build -t webhook-arc:latest .
+```
+
+Then run this to start the container:
+
+```
+docker run -d -p 50001:50001 --rm --name webhook-arc webhook-arc:latest
+```

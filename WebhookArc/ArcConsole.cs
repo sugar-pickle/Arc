@@ -7,7 +7,8 @@ namespace WebhookArc
 {
     public interface IArcConsole
     {
-        void RunConsole();
+        void RunInteractiveConsole();
+        void RunNonInteractive();
     }
 
     public class ArcConsole : IArcConsole
@@ -24,16 +25,31 @@ namespace WebhookArc
             this.arcLog = arcLog;
         }
 
-        public void RunConsole()
+        public void RunInteractiveConsole()
         {
-            cTokenSource = new CancellationTokenSource();
-            arcServerTask = arcServer.RunServer(cTokenSource.Token);
+            StartArcServer();
 
             while (!cTokenSource.IsCancellationRequested)
             {
                 var option = MainMenu();
                 HandleMainMenu(option);
             }
+        }
+
+        public void RunNonInteractive()
+        {
+            StartArcServer();
+            while (true)
+            {
+                LoopLog();
+                Thread.Sleep(1000);
+            }
+        }
+
+        private void StartArcServer()
+        {
+            cTokenSource = new CancellationTokenSource();
+            arcServerTask = arcServer.RunServer(cTokenSource.Token);
         }
 
         private void HandleMainMenu(int option)
@@ -67,7 +83,7 @@ namespace WebhookArc
 
         private int MainMenu()
         {
-            while (true)
+            while (!cTokenSource.IsCancellationRequested)
             {
                 Console.Clear();
                 Console.WriteLine(
@@ -83,6 +99,8 @@ namespace WebhookArc
 
                 Console.WriteLine("Invalid option specified");
             }
+
+            return 0;
         }
 
         private void Status()
@@ -121,14 +139,18 @@ namespace WebhookArc
             Console.Clear();
             Console.WriteLine($"There are {arcLog.Size} new log entries");
             PressAnyKey();
-            var i = 0;
+            LoopLog();            
+            PressAnyKey();
+        }
 
+        private void LoopLog()
+        {
+            var i = 0;
             while (arcLog.Size > 0)
             {
                 Console.WriteLine($"{i} - {arcLog.Next}");
                 i++;
             }
-            PressAnyKey();
         }
 
         private void PressAnyKey()

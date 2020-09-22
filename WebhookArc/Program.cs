@@ -10,7 +10,10 @@ namespace WebhookArc
             var config = LoadConfig();
             var container = Autofac.BuildContainer(config);
             var arcConsole = container.Resolve<IArcConsole>();
-            arcConsole.RunConsole();
+            if (args.Length > 0 && args[0] == "-i")
+                arcConsole.RunInteractiveConsole();
+            else
+                arcConsole.RunNonInteractive();
         }
 
         private static ArcConfig LoadConfig()
