@@ -38,7 +38,7 @@ namespace WebhookArc
 
         private async Task RunLineHandler(Socket clientSocket, CancellationToken cToken)
         {
-            clientSocket.ReceiveTimeout = (int)config.TimeoutSeconds;
+            clientSocket.ReceiveTimeout = (int)config.TimeoutSeconds * 1000;
             ConnectedEndpoint = (IPEndPoint)clientSocket.RemoteEndPoint;
             arcLog.Log($"Running line handler - Incoming connection from {ConnectedEndpoint}");
 
