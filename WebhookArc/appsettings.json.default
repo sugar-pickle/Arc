@@ -1,0 +1,5 @@
+﻿{
+  "ListenPort": 50001,
+  "TimeoutSeconds": 30,
+  "WebhookUrl": ""
+}
