@@ -34,7 +34,7 @@ namespace WebhookArc
             lineHandlerTask = Task.Run(() => RunLineHandler(clientSocket, cToken));
         }
 
-        public bool LineHandlerRunning => !lineHandlerTask.IsCompleted && !lineHandlerTask.IsCanceled;
+        public bool LineHandlerRunning { get; private set; } = true;
 
         private async Task RunLineHandler(Socket clientSocket, CancellationToken cToken)
         {
@@ -45,6 +45,7 @@ namespace WebhookArc
             await Read(clientSocket, cToken);
 
             arcLog.Log($"Closing line handler for {ConnectedEndpoint}");
+            LineHandlerRunning = false;
         }
 
         private async Task Read(Socket clientSocket, CancellationToken cToken)
