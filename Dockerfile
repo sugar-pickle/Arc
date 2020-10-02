@@ -7,6 +7,8 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY ./WebhookArc/ ./
+RUN rm -f appsettings.json
+RUN touch appsettings.json
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
