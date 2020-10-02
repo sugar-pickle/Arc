@@ -1,4 +1,4 @@
-# Webhook ARC
+# ARC
 
 Implements a basic Surgard alarm receiver and sends incoming events to a webhook.
 
@@ -19,11 +19,11 @@ Follow the instructions above to set up the appsettings.json
 From the project root, run the following to build the docker image:
 
 ```
-docker build -t webhook-arc:latest .
+docker build -t arc:latest .
 ```
 
 Then run this to start the container:
 
 ```
-docker run -d -p 50001:50001 --rm --name webhook-arc webhook-arc:latest
+docker run -d -p 50001:50001 --rm --name arc arc:latest
 ```
