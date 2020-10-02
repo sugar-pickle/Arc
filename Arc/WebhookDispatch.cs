@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using RestSharp;
 
-namespace Atomic.ArcÍ
+namespace Atomic.Arc
 {
     public interface IWebhookDispatch
     {
