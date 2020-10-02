@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebhookArc", "WebhookArc\WebhookArc.csproj", "{30A6FFAF-941F-44AA-94BE-5222EABDBFA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arc", "Arc\Arc.csproj", "{30A6FFAF-941F-44AA-94BE-5222EABDBFA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

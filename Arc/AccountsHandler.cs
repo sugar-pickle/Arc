@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public interface IAccountsHandler
     {

@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Configuration;
 
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public static class Program
     {

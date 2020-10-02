@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using Autofac;
 
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public static class Autofac
     {

@@ -1,4 +1,4 @@
-﻿namespace WebhookArc
+﻿namespace Atomic.Arc
 {
     public class ArcConfig
     {

@@ -1,6 +1,6 @@
 ﻿using Autofac;
 
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public interface ILineHandlerFactory
     {

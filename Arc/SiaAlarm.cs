@@ -1,5 +1,5 @@
 ﻿using System;
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public class SiaAlarm
     {

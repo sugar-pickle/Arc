@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public interface IArcLog
     {

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WebhookArc
+namespace Atomic.Arc
 {
     public interface ILineHandler
     {
