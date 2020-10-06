@@ -25,7 +25,7 @@ namespace Atomic.Arc
         public void Log(string log)
         {
             logList.Add(log);
-            using StreamWriter w = File.AppendText("log.txt");
+            using var w = File.AppendText("log.txt");
             w.Write($"\r\n{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()} - {log}" + log);
         }
     }

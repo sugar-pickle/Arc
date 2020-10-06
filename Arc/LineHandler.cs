@@ -19,19 +19,21 @@ namespace Atomic.Arc
         private readonly IWebhookDispatch webhookDispatch;
         private Task lineHandlerTask;
         private readonly IArcLog arcLog;
+        private readonly IAlarmLog alarmLog;
 
         public IPEndPoint ConnectedEndpoint { get; private set; }
 
-        public LineHandler(IWebhookDispatch webhookDispatch, ArcConfig config, IArcLog arcLog)
+        public LineHandler(IWebhookDispatch webhookDispatch, ArcConfig config, IArcLog arcLog, IAlarmLog alarmLog)
         {
             this.webhookDispatch = webhookDispatch;
             this.config = config;
             this.arcLog = arcLog;
+            this.alarmLog = alarmLog;
         }
 
         public void StartLineHandler(Socket clientSocket, CancellationToken cToken)
         {
-            lineHandlerTask = Task.Run(() => RunLineHandler(clientSocket, cToken));
+            lineHandlerTask = Task.Run(() => RunLineHandler(clientSocket, cToken), cToken);
         }
 
         public bool LineHandlerRunning { get; private set; } = true;
@@ -63,7 +65,10 @@ namespace Atomic.Arc
                         arcLog.Log($"{ConnectedEndpoint} - Alarm received -> {data}");
                         var siaAlarm = AlarmDecoder.Process(data);
                         if (siaAlarm.Decoded)
-                            await webhookDispatch.SendToWebhook(siaAlarm);
+                        {
+                            alarmLog.LogAlarm(siaAlarm);
+                            if (config.WebhookEnabled) await webhookDispatch.SendToWebhook(siaAlarm);
+                        }
                     }
 
                     await Ack(clientSocket, cToken);
