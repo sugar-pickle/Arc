@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System;
+using System.Runtime.Loader;
+using Autofac;
 using Microsoft.Extensions.Configuration;
 
 namespace Atomic.Arc
@@ -10,6 +12,10 @@ namespace Atomic.Arc
             var config = LoadConfig();
             var container = Autofac.BuildContainer(config);
             var arcConsole = container.Resolve<IArcConsole>();
+
+            Console.CancelKeyPress += (s, e) => arcConsole.Exit();
+            AssemblyLoadContext.Default.Unloading += ctx => arcConsole.Exit();
+            
             if (args.Length > 0 && args[0] == "-i")
                 arcConsole.RunInteractiveConsole();
             else

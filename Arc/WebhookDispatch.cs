@@ -7,6 +7,7 @@ namespace Atomic.Arc
     public interface IWebhookDispatch
     {
         Task SendToWebhook(SiaAlarm alarm);
+        Task SendToWebhook(string message);
     }
 
     public class GenericWebhookDispatch : IWebhookDispatch
@@ -14,29 +15,42 @@ namespace Atomic.Arc
         private readonly RestClient restClient;
         private readonly IAccountsHandler accountsHandler;
         private readonly IArcLog arcLog;
+        private readonly bool configured;
+        private const string SystemUsername = "System";
 
         public GenericWebhookDispatch(ArcConfig config, IAccountsHandler accountsHandler, IArcLog arcLog)
         {
-            restClient = new RestClient(config.WebhookUrl);
+            if (config.WebhookEnabled)
+            {
+                configured = true;
+                restClient = new RestClient(config.WebhookUrl);
+            }
             this.accountsHandler = accountsHandler;
             this.arcLog = arcLog;
         }
 
         public async Task SendToWebhook(SiaAlarm alarm)
+            => await SendToWebhook(accountsHandler.GetUsername(alarm.AccountNumber),JsonConvert.SerializeObject(alarm));
+
+        public async Task SendToWebhook(string message) => await SendToWebhook(SystemUsername, message);
+
+        private async Task SendToWebhook(string username, string content)
         {
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("content-type", "application/json");
-
-            var context = new WebhookContext
+            if (configured)
             {
-                Username = accountsHandler.GetUsername(alarm.AccountNumber),
-                Content = JsonConvert.SerializeObject(alarm)
-            };
-            request.AddJsonBody(JsonConvert.SerializeObject(context));
-            var response = await restClient.ExecuteAsync(request);
+                var context = new WebhookContext
+                {
+                    Username = username,
+                    Content = content
+                };
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("content-type", "application/json");
+                request.AddJsonBody(JsonConvert.SerializeObject(context));
+                var response = await restClient.ExecuteAsync(request);
 
-            if (!response.IsSuccessful)
-                arcLog.Log($"Webhook request failed - {response}");
+                if (!response.IsSuccessful)
+                    arcLog.Log($"Webhook request failed - {response}");
+            }
         }
     }
 

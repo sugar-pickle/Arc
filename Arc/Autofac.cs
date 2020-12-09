@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using Autofac;
 
@@ -40,6 +41,10 @@ namespace Atomic.Arc
 
             builder.RegisterType<ArcConsole>()
                 .As<IArcConsole>()
+                .SingleInstance();
+
+            builder.RegisterType<AlarmLog>()
+                .As<IAlarmLog>()
                 .SingleInstance();
 
             return builder.Build();

@@ -9,6 +9,7 @@ namespace Atomic.Arc
     {
         void RunInteractiveConsole();
         void RunNonInteractive();
+        void Exit();
     }
 
     public class ArcConsole : IArcConsole
@@ -39,17 +40,17 @@ namespace Atomic.Arc
         public void RunNonInteractive()
         {
             StartArcServer();
-            while (true)
+            while (!cTokenSource.IsCancellationRequested)
             {
-                LoopLog();
-                Thread.Sleep(1000);
+                //LoopLog();
+                Task.Delay(1000).Wait();
             }
         }
 
         private void StartArcServer()
         {
             cTokenSource = new CancellationTokenSource();
-            arcServerTask = arcServer.RunServer(cTokenSource.Token);
+            arcServerTask = Task.Run(() => arcServer.RunServer(cTokenSource.Token));
         }
 
         private void HandleMainMenu(int option)
@@ -71,13 +72,18 @@ namespace Atomic.Arc
             }
         }
 
-        private void Exit()
+        public void Exit()
         {
             Console.Clear();
             Console.WriteLine("Exiting, please wait");
             cTokenSource.Cancel();
             Console.WriteLine("Waiting for ARC Server task to complete");
-            arcServerTask.Wait();
+            try
+            {
+                arcServerTask.Wait();
+            }
+            catch { }
+
             Console.WriteLine("ARC Server has finished, exiting");
         }
 
@@ -153,7 +159,7 @@ namespace Atomic.Arc
             }
         }
 
-        private void PressAnyKey()
+        private static void PressAnyKey()
         {
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();

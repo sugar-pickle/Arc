@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -38,12 +39,13 @@ namespace Atomic.Arc
             socket.Bind(endpoint);
             socket.Listen(10);
 
-            arcLog.Log($"ARC Server started - listening on port {config.ListenPort}");
-            _ = Task.Run(() => Cleaner(cToken));
+            arcLog.Log($"ARC Server started - listening on port {endpoint.Port}");
+            _ = Task.Run(() => Cleaner(cToken), cToken);
 
             while (!cToken.IsCancellationRequested)
             {
-                var newSocket = await socket.AcceptAsync();
+                var newSocket = await socket.AcceptAsync().WithCancellation(cToken);
+                Console.WriteLine($"Incoming connection from {newSocket.RemoteEndPoint}");
                 var lineHandler = lineHandlerFactory.NewInstance();
                 lineHandler.StartLineHandler(newSocket, cToken);
                 lock (listLock)
@@ -60,16 +62,13 @@ namespace Atomic.Arc
             arcLog.Log("ARC Server cleaner task started");
             while(!cToken.IsCancellationRequested)
             {
-                await Task.Delay(30000);
+                await Task.Delay(30000, cToken);
                 lock (listLock)
                 {
-                    foreach (var lh in lineHandlers)
+                    foreach (var lh in lineHandlers.Where(lh => !lh.LineHandlerRunning))
                     {
-                        if (!lh.LineHandlerRunning)
-                        {
-                            arcLog.Log($"Removing closed line handler for {lh.ConnectedEndpoint}");
-                            lineHandlers.Remove(lh);
-                        }
+                        arcLog.Log($"Removing closed line handler for {lh.ConnectedEndpoint}");
+                        lineHandlers.Remove(lh);
                     }
                 }
             }

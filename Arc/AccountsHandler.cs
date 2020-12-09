@@ -41,10 +41,9 @@ namespace Atomic.Arc
             arcLog.Log("Loading Account data");
             lock (busy)
             {
-                if (File.Exists(config.AccountsFilename))
-                    accounts = JsonConvert.DeserializeObject<List<Account>>(File.ReadAllText(config.AccountsFilename));
-                else
-                    accounts = new List<Account>();
+                accounts = File.Exists(config.AccountsFilename)
+                    ? JsonConvert.DeserializeObject<List<Account>>(File.ReadAllText(config.AccountsFilename))
+                    : new List<Account>();
                 arcLog.Log($"Loaded {accounts.Count} accounts");
             }
         }
