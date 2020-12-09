@@ -18,6 +18,7 @@ namespace Atomic.Arc
         private CancellationTokenSource cTokenSource;
         private readonly IArcServer arcServer;
         private readonly IArcLog arcLog;
+        private readonly IAlarmLog alarmLog;
 
 
         public ArcConsole(IArcServer arcServer, IArcLog arcLog)
@@ -42,7 +43,7 @@ namespace Atomic.Arc
             StartArcServer();
             while (!cTokenSource.IsCancellationRequested)
             {
-                //LoopLog();
+                LoopLog(true);
                 Task.Delay(1000).Wait();
             }
         }
@@ -118,7 +119,8 @@ namespace Atomic.Arc
                 Console.WriteLine(
                     "Current Status:\n" +
                     "\tARC Server is RUNNING\n" +
-                    "\tThere are " + count + " Line handlers running\n"
+                    "\tThere are " + count + " Line handlers running\n" +
+                    "\tHandled " + alarmLog.GetAllAlarms.Count() + " alarms\n"
                     );
 
                 if (count > 0)
@@ -149,12 +151,13 @@ namespace Atomic.Arc
             PressAnyKey();
         }
 
-        private void LoopLog()
+        private void LoopLog(bool nonInteractive = false)
         {
             var i = 0;
             while (arcLog.Size > 0)
             {
-                Console.WriteLine($"{i} - {arcLog.Next}");
+                var str = nonInteractive ? arcLog.Next : $"{i} - {arcLog.Next}";
+                Console.WriteLine(str);
                 i++;
             }
         }
