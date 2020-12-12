@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 
 namespace Atomic.Arc
 {
@@ -30,7 +32,7 @@ namespace Atomic.Arc
         }
 
         public async Task SendToWebhook(SiaAlarm alarm)
-            => await SendToWebhook(accountsHandler.GetUsername(alarm.AccountNumber),JsonConvert.SerializeObject(alarm));
+            => await SendToWebhook(accountsHandler.GetUsername(alarm.AccountNumber),SiaAlarm.GetWebhookAlarmString(alarm));
 
         public async Task SendToWebhook(string message) => await SendToWebhook(SystemUsername, message);
 
@@ -40,23 +42,24 @@ namespace Atomic.Arc
             {
                 var context = new WebhookContext
                 {
-                    Username = username,
-                    Content = content
+                    username = username,
+                    content = content
                 };
+                var jsonContent = JsonConvert.SerializeObject(context);
                 var request = new RestRequest(Method.POST);
                 request.AddHeader("content-type", "application/json");
-                request.AddJsonBody(JsonConvert.SerializeObject(context));
+                request.AddJsonBody(jsonContent);
                 var response = await restClient.ExecuteAsync(request);
 
                 if (!response.IsSuccessful)
-                    arcLog.Log($"Webhook request failed - {response}");
+                    arcLog.Log($"Webhook request failed - {response.Content}");
             }
         }
     }
 
-    internal class WebhookContext
+    public class WebhookContext
     {
-        internal string Username { get; set; }
-        internal string Content { get; set; }
+        public string username { get; set; }
+        public string content { get; set; }
     }
 }

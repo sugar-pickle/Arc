@@ -30,9 +30,16 @@ namespace Atomic.Arc
 
         public string GetUsername(string accountNumber)
         {
-            lock(busy)
+            try
             {
-                return accounts.FirstOrDefault(x => x.AccountNumber == accountNumber).Username;
+                lock (busy)
+                {
+                    return accounts.FirstOrDefault(x => x.AccountNumber == accountNumber).Username;
+                }
+            }
+            catch
+            {
+                return accountNumber;
             }
         }
 
